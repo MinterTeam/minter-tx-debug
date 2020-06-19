@@ -1,13 +1,16 @@
 // register env before other imports @see https://www.npmjs.com/package/dotenv#how-do-i-use-dotenv-with-import-
 import 'dotenv/config';
 import dotenv from 'dotenv';
-// const nodeExternals = require('webpack-node-externals');
+import webpack from 'webpack';
 
 const envConfig = dotenv.config();
+const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
+envConfigParsed.APP_BASE_URL = process.env.APP_BASE_URL;
 
-import {BASE_TITLE, BASE_DESCRIPTION} from "./assets/variables";
 
-module.exports = {
+import {BASE_TITLE, BASE_DESCRIPTION, APP_BASE_URL} from "./assets/variables";
+
+export default {
     /*
     ** Headers of the page
     */
@@ -19,11 +22,11 @@ module.exports = {
             { hid: 'description', name: 'description', content: BASE_DESCRIPTION },
             { hid: 'og-title', name: 'og:title', content: BASE_TITLE },
             { hid: 'og-description', name: 'og:description', content: BASE_DESCRIPTION },
-            { hid: 'og-image', name: 'og:image', content: '/social-share.png' },
+            { hid: 'og-image', name: 'og:image', content: `${APP_BASE_URL}social-share.png` },
         ],
         link: [
-            { rel: 'icon', href: '/favicon.png' },
-            { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+            { rel: 'icon', href: `${APP_BASE_URL}favicon.png` },
+            { rel: 'apple-touch-icon', href: `${APP_BASE_URL}apple-touch-icon.png` },
         ],
     },
     css: [
@@ -33,17 +36,8 @@ module.exports = {
     ** Customize the progress bar color
     */
     loading: { color: '#cf5c2c' },
-    generate: {
-        exclude: [
-            /profile/,
-            /queue/
-        ],
-        // ssr midleware break auth
-        // routes: [
-        //     '/auth',
-        // ],
-    },
     router: {
+        base: process.env.APP_BASE_URL || '/',
         linkActiveClass: '',
         linkExactActiveClass: 'is-active',
         middleware: [
@@ -53,13 +47,12 @@ module.exports = {
     },
     plugins: [
         { src: '~/plugins/click-blur.js', ssr: false },
-        // { src: '~/plugins/persistedState.js', ssr: false },
-        // { src: '~/plugins/seo-gtm.js', ssr: false },
         { src: '~/plugins/base-url-prefix.js' },
     ],
-    env: envConfig.error ? {} : envConfig.parsed,
+    env: envConfigParsed,
     modules: [
     ],
+    modern: 'client',
     /*
     ** Build configuration
     */
@@ -73,13 +66,9 @@ module.exports = {
         //     }
         // },
         watch: [
-            // './.env',
             './api/',
-            `./lang/`,
+            // `./lang/`, // this watcher dont-work yet
         ],
-        /*
-        ** Run ESLint on save
-        */
         extend(config, { isDev, isClient, isServer }) {
 
             if (!config.resolve) {
@@ -87,6 +76,9 @@ module.exports = {
             }
             config.resolve.mainFields =  ['module', 'browser', 'main'];
         },
+        plugins: [
+            new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
+        ],
         babel: {
             // presets: [
             //     [

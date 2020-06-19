@@ -1,0 +1,11 @@
+export const APP_BASE_URL =  process.env.APP_BASE_URL || '/';
+export const BASE_TITLE_END = ' — Minter';
+export const BASE_TITLE = 'Tx Debugger — Minter';
+export const BASE_DESCRIPTION = 'Decode and encode transactions from Minter network';
+export const GATE_API_URL = process.env.APP_GATE_API_URL;
+export const EXPLORER_API_URL = process.env.APP_EXPLORER_API_URL;
+export const EXPLORER_HOST = process.env.APP_EXPLORER_HOST;
+export const CHAIN_ID_MAINNET = 1;
+export const CHAIN_ID_TESTNET = 2;
+export const SIGNATURE_TYPE_SINGLE = 1;
+export const SIGNATURE_TYPE_MULTI = 2;

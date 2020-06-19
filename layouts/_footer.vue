@@ -8,7 +8,7 @@
     <footer class="footer">
         <div class="u-container u-container--large">
             <div class="footer__container">
-                <img class="footer__logo u-hidden-small-down" src="/img/minter-logo-white.svg" width="95" height="30" alt="Minter">
+                <img class="footer__logo u-hidden-small-down" :src="`${BASE_URL_PREFIX}/img/minter-logo-white.svg`" width="95" height="30" alt="Minter">
                 <div class="footer__menu">
                     <div class="footer__menu-item">
                         <a class="footer__link u-h link--hover" href="https://minter.org/legal/terms.pdf" target="_blank">Terms</a>

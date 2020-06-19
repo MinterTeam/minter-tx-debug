@@ -27,7 +27,7 @@
             <div class="header__container u-container u-container--large" data-header-container>
                 <nuxt-link class="header__logo" to="/" data-header-logo>
                     <!-- размеры у лого заданы чтобы сразу правильно расчиталось в js -->
-                    <img class="header__logo-image" src="/img/minter-logo-circle.svg" alt="Minter" width="36" height="36">
+                    <img class="header__logo-image" :src="`${BASE_URL_PREFIX}/img/minter-logo-circle.svg`" alt="Minter" width="36" height="36">
                 </nuxt-link>
                 <nav class="header__menu" data-header-menu>
                     <nuxt-link class="header__link" to="/">Decode Tx</nuxt-link>

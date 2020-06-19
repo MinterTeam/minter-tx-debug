@@ -52,7 +52,7 @@ export default {
     env: envConfigParsed,
     modules: [
     ],
-    modern: 'client',
+    // modern: 'client',
     /*
     ** Build configuration
     */

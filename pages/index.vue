@@ -45,6 +45,9 @@
             json() {
                 return JSON.stringify(this.tx, null, 4);
             },
+            editUrl() {
+                return '/encode#' + JSON.stringify(this.tx)
+            },
         },
         methods: {
             decode() {
@@ -90,35 +93,43 @@
                             <circle class="loader__path" cx="21" cy="21" r="14"></circle>
                         </svg>
                     </button>
-                    <div class="form__error u-mt-10 u-text-center" v-if="error">
-                        {{ error }}
-                    </div>
+                    <client-only>
+                        <div class="form__error u-mt-10 u-text-center" v-if="error">
+                            {{ error }}
+                        </div>
+                    </client-only>
                 </div>
             </form>
 
-
-            <h2 class="u-h3 u-mb-10 u-mt-20" v-if="tx">Result:</h2>
-            <div class="u-grid u-grid--medium u-grid--vertical-margin" v-if="tx">
-<!--
-                <div class="u-cell" v-for="(value, key) in tx">
-                    <label class="form-field">
-                            <textarea class="form-field__input is-not-empty" rows="1" v-autosize
-                                      :value="value"
-                            ></textarea>
-                        <span class="form-field__label">{{ key }}</span>
-                    </label>
-                </div>
--->
-                <div class="u-cell">
-                    <label class="form-field">
+            <client-only>
+                <h2 class="u-h3 u-mb-10 u-mt-20" v-if="tx">Result:</h2>
+                <div class="u-grid u-grid--medium u-grid--vertical-margin" v-if="tx">
+                    <!--
+                                    <div class="u-cell" v-for="(value, key) in tx">
+                                        <label class="form-field">
+                                                <textarea class="form-field__input is-not-empty" rows="1" v-autosize
+                                                          :value="value"
+                                                ></textarea>
+                                            <span class="form-field__label">{{ key }}</span>
+                                        </label>
+                                    </div>
+                    -->
+                    <div class="u-cell">
+                        <label class="form-field">
                             <textarea class="form-field__input is-not-empty" rows="1" readonly v-autosize
                                       :value="json"
                             ></textarea>
-                        <span class="form-field__label">JSON</span>
-                    </label>
-                    <!--<span class="form-field__help">Note: coin values converted from pip</span>-->
+                            <span class="form-field__label">JSON</span>
+                        </label>
+                        <!--<span class="form-field__help">Note: coin values converted from pip</span>-->
+                    </div>
+                    <div class="u-cell">
+                        <nuxt-link class="button button--ghost-black button--full" :to="editUrl">
+                            Edit on /encode page
+                        </nuxt-link>
+                    </div>
                 </div>
-            </div>
+            </client-only>
 
             <h2 class="u-h3 u-mb-10 u-mt-20">Notes</h2>
             <p>

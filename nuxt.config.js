@@ -53,6 +53,11 @@ export default {
     modules: [
     ],
     // modern: 'client',
+    generate: {
+        exclude: [
+            '/encode',
+        ],
+    },
     /*
     ** Build configuration
     */

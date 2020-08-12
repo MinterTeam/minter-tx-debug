@@ -169,6 +169,11 @@ hr {border: none; border-top: 1px solid @c-border;}
     &:hover, &:focus {background: fade(@c-green, 20%);}
     &:active {background: fade(@c-green, 40%);}
 }
+.button--ghost-black {
+    color: @c-black; background: transparent; border-color: @c-black;
+    &:hover, &:focus {color: #fff; background: @c-black;}
+    &:active {color: #fff; background: tint(@c-black, 15%);}
+}
 //.button--ghost-white {
 //    color: #fff; background: transparent; border-color: #fff;
 //    &:hover, &:focus {color: @c-black; background: #fff;}

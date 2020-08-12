@@ -30,8 +30,8 @@
                     <img class="header__logo-image" :src="`${BASE_URL_PREFIX}/img/minter-logo-circle.svg`" alt="Minter" width="36" height="36">
                 </nuxt-link>
                 <nav class="header__menu" data-header-menu>
-                    <nuxt-link class="header__link" to="/">Decode Tx</nuxt-link>
-                    <nuxt-link class="header__link" to="/encode">Encode Tx</nuxt-link>
+                    <nuxt-link class="header__link" to="/" :class="{'is-active-loose': $route.name === 'index'}">Decode Tx</nuxt-link>
+                    <nuxt-link class="header__link" to="/encode" :class="{'is-active-loose': $route.name === 'encode'}">Encode Tx</nuxt-link>
                 </nav>
 
                 <div class="header__controls">

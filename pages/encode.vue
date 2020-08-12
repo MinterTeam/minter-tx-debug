@@ -189,7 +189,7 @@
                     return;
                 }
 
-                window.history.replaceState(window.history.state, null, '#' + JSON.stringify(this.getTxParams()));
+                window.history.replaceState(window.history.state, null, window.location.pathname + '#' + JSON.stringify(this.getTxParams()));
                 this.signature = null;
                 this.resultTx = null;
                 this.serverError = '';

@@ -89,9 +89,6 @@
                 <div class="u-cell">
                     <button class="button button--green button--full">
                         Decode
-                        <svg class="loader loader--button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42">
-                            <circle class="loader__path" cx="21" cy="21" r="14"></circle>
-                        </svg>
                     </button>
                     <client-only>
                         <div class="form__error u-mt-10 u-text-center" v-if="error">

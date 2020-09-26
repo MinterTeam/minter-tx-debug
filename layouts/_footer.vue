@@ -1,36 +1,44 @@
 <script>
-    export default {
+import footerLinksData from '@minterteam/footer-links';
 
-    }
+export default {
+    // first key not handled by webstorm intelliSense
+    ideFix: 1,
+    footerLinkList: footerLinksData,
+    props: {
+        containerClass: {
+            type: String,
+            default: 'u-container--large',
+        },
+    },
+    computed: {
+        locale() {
+            return (this.$i18n && this.$i18n.locale) || 'en';
+        },
+    },
+    methods: {
+        getUrl(link) {
+            return link.url;
+        },
+    },
+}
 </script>
 
 <template>
     <footer class="footer">
         <div class="u-container u-container--large">
             <div class="footer__container">
-                <img class="footer__logo u-hidden-small-down" :src="`${BASE_URL_PREFIX}/img/minter-logo-white.svg`" width="95" height="30" alt="Minter">
+                <img class="footer__logo u-hidden-large-down" :src="`${BASE_URL_PREFIX}/img/minter-logo-white.svg`" width="95" height="30" alt="Minter">
                 <div class="footer__menu">
-                    <div class="footer__menu-item">
-                        <a class="footer__link u-h link--hover" href="https://minter.org/legal/terms.pdf" target="_blank">Terms</a>
+                    <div class="footer__menu-item" v-for="link in $options.footerLinkList" :key="link.slug">
+                        <a class="footer__link u-h link--hover" :href="getUrl(link)" target="_blank" rel="nofollow noopener">{{ link.title[locale] }}</a>
                     </div>
+
                     <div class="footer__menu-item">
-                        <a class="footer__link u-h link--hover" href="https://minter.org/legal/privacy.pdf" target="_blank">Privacy</a>
-                    </div>
-                    <div class="footer__menu-item">
-                        <a class="footer__link u-h link--hover" href="https://help.minter.network" target="_blank">Help</a>
-                    </div>
-                    <div class="footer__menu-item">
-                        <a class="footer__link u-h link--hover" href="mailto:hello@minter.org" target="_blank" rel="nofollow noopener">Contact</a>
+                        <a class="footer__link u-h link--hover" href="https://github.com/MinterTeam/minter-tx-debug" target="_blank" rel="nofollow noopener">Edit on GitHub</a>
                     </div>
                 </div>
             </div>
-            <p class="footer__copyright u-mt-10">
-                Copyright © 2019 Minter Development Foundation. <br>
-                All Rights Reserved. <br>
-                75 Broadway, Suite 202, San&nbsp;Francisco, CA, 94111 <br>
-                For correspondence: 548 Market St #32852, San&nbsp;Francisco, CA 94104-5401 <br>
-                <a class="link--default" href="mailto:hello@minter.org">hello@minter.org</a>
-            </p>
         </div>
     </footer>
 </template>

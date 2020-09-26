@@ -1,14 +1,14 @@
 <script>
     import HeaderMenu from '~/assets/header-menu';
     import Snackbar from '~/components/common/Snackbar';
-    // import Footer from '~/layouts/_footer';
+    import Footer from '~/layouts/_footer';
 
     let headerMenu;
 
     export default {
         components: {
             Snackbar,
-            // Footer,
+            Footer,
         },
         mounted() {
             headerMenu = new HeaderMenu();
@@ -48,7 +48,7 @@
 
         <nuxt class="main-content"/>
 
-<!--        <Footer/>-->
+        <Footer/>
         <Snackbar/>
     </div>
 </template>

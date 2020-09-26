@@ -1,6 +1,8 @@
-# id.minter.org website
+# Minter transaction debugger
 
-This is the repository containing the code for the [id.minter.org](https://id.minter.org) website
+Helps encode and decode raw transactions
+
+[minterteam.github.io/minter-tx-debug](https://minterteam.github.io/minter-tx-debug/)
 
 
 ## Install

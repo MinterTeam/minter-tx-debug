@@ -125,7 +125,7 @@
                     </div>
                     <div class="u-cell">
                         <nuxt-link class="button button--ghost-black button--full" :to="editUrl">
-                            Edit on /encode page
+                            Edit on the Encode page
                         </nuxt-link>
                     </div>
                 </div>

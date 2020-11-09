@@ -32,6 +32,7 @@
                 <nav class="header__menu" data-header-menu>
                     <nuxt-link class="header__link" to="/" :class="{'is-active-loose': $route.name === 'index'}">Decode Tx</nuxt-link>
                     <nuxt-link class="header__link" to="/encode" :class="{'is-active-loose': $route.name === 'encode'}">Encode Tx</nuxt-link>
+                    <nuxt-link class="header__link" to="/decode-check" :class="{'is-active-loose': $route.name === 'decode-check'}">Decode Check</nuxt-link>
                 </nav>
 
                 <div class="header__controls">

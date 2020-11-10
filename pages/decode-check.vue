@@ -130,7 +130,7 @@
 
             <h2 class="u-h3 u-mb-10 u-mt-20">Notes</h2>
             <p>
-                — <a class="link--default" href="https://github.com/MinterTeam/minter-js-sdk#decode-check" target="_blank">decodeCheck</a> method from minter-js-sdk is used under the hood. <br>
+                — <a class="link--default" href="https://github.com/MinterTeam/minter-js-sdk#decodecheck" target="_blank">decodeCheck</a> method from minter-js-sdk is used under the hood. <br>
                 — coin values will be converted from pip
             </p>
         </section>

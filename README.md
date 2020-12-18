@@ -9,7 +9,7 @@ Helps encode and decode raw transactions
 
 - ensure latest stable Node.js and NPM are installed
 - clone the repo
-- copy .env.example `cp .env.example .env`
+- copy .env.master `cp .env.master .env`
 - set correct .env variables
 - install node_modules `npm ci`
 - build `npm run production`

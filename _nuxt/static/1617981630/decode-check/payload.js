@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/decode-check", {data:[{}],fetch:{},mutations:[]});

@@ -1,0 +1,1 @@
+window.__NUXT__=(function(a){return {staticAssetsBase:"\u002Fminter-tx-debug\u002F_nuxt\u002Fstatic\u002F1617981630",layout:"default",error:a,state:{validatorList:[],isSnackbarActive:false},serverRendered:true,routePath:"\u002F",config:{_app:{basePath:"\u002Fminter-tx-debug\u002F",assetsPath:"\u002Fminter-tx-debug\u002F_nuxt\u002F",cdnURL:a}}}}(null));

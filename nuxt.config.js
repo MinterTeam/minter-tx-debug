@@ -11,6 +11,8 @@ envConfigParsed.APP_BASE_URL = process.env.APP_BASE_URL;
 import {BASE_TITLE, BASE_DESCRIPTION, APP_BASE_URL} from "./assets/variables";
 
 export default {
+    target: 'static',
+    telemetry: false,
     /*
     ** Headers of the page
     */
@@ -85,17 +87,18 @@ export default {
             new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
         ],
         babel: {
-            // presets: [
-            //     [
-            //         '@nuxt/babel-preset-app',
-            //         {
-            //             // targets: isServer ? { node: '10' } : { ie: '11' },
-            //             corejs: { version: 3 },
-            //         },
-            //     ],
-            // ],
+            presets: [
+                [
+                    '@nuxt/babel-preset-app',
+                    // {
+                        // targets: isServer ? { node: '10' } : { ie: '11' },
+                        // corejs: { version: 3 },
+                    // },
+                ],
+            ],
             plugins: [
-                // "@babel/plugin-proposal-optional-chaining",
+                "@babel/plugin-proposal-optional-chaining",
+                "@babel/plugin-proposal-numeric-separator",
             ],
             // prevent @babel/plugin-transform-runtime from inserting `import` statement into commonjs files (bc. it breaks webpack)
             sourceType: 'unambiguous',
@@ -120,12 +123,11 @@ export default {
             'clipbrd/src',
             'pretty-num/src',
             'from-exponential/src',
-            'minterjs-util',
+            'minterjs-util/src',
             'minterjs-tx',
             'minterjs-wallet',
             'bip39/src', // minterjs-wallet
             'minter-js-sdk',
-            'minter-js-org',
         ],
     },
 };

@@ -1,4 +1,12 @@
 /*!
+ * qrcode.vue v1.7.0
+ * A Vue component to generate QRCode.
+ * © 2017-2019 @scopewu(https://github.com/scopewu)
+ * MIT License.
+ */
+
+
+/*!
  * Sizzle CSS Selector Engine v2.3.6
  * https://sizzlejs.com/
  *
@@ -82,33 +90,6 @@
  */
 
 
-/*!
- * qrcode.vue v1.7.0
- * A Vue component to generate QRCode.
- * © 2017-2019 @scopewu(https://github.com/scopewu)
- * MIT License.
- */
-
-
-/*!
-  * vue-router v3.5.2
-  * (c) 2021 Evan You
-  * @license MIT
-  */
-
-/*!
- * Vue.js v2.6.14
- * (c) 2014-2021 Evan You
- * Released under the MIT License.
- */
-
-/*!
- * vuex v3.6.2
- * (c) 2021 Evan You
- * @license MIT
- */
-
-
 /*
 object-assign
 (c) Sindre Sorhus
@@ -142,4 +123,31 @@ object-assign
  * @property {number} [gasRetryLimit=2] - max number of autofix retries after gas error
  * @property {number} [nonceRetryLimit=0] - max number of autofix retries after nonce error
  * @preserve {number} [mempoolRetryLimit=0] - max number of retries after "already exists in mempool" error
+ */
+
+
+/*!
+  * vue-router v3.5.2
+  * (c) 2021 Evan You
+  * @license MIT
+  */
+
+/*!
+ * Vue.js v2.6.14
+ * (c) 2014-2021 Evan You
+ * Released under the MIT License.
+ */
+
+/*!
+ * vuex v3.6.2
+ * (c) 2021 Evan You
+ * @license MIT
+ */
+
+
+/*!
+ * repeat-string <https://github.com/jonschlinkert/repeat-string>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT License.
  */

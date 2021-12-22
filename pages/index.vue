@@ -1,5 +1,8 @@
 <script>
+    import {stringify} from 'comment-json';
     import {decodeTx} from 'minter-js-sdk';
+    import {normalizeTxType, txTypeList} from 'minterjs-util';
+    import {Tx} from 'minterjs-tx';
     import autosize from 'v-autosize';
     import checkEmpty from '~/assets/v-check-empty';
     import getTitle from '~/assets/get-title.js';
@@ -43,7 +46,17 @@
         },
         computed: {
             json() {
-                return JSON.stringify(this.tx, null, 4);
+                const tx = {...this.tx};
+                if (!tx) {
+                    return '';
+                }
+                addComment(tx, 'chainId', tx.chainId === '1' ? 'mainnet' : 'testnet');
+                addComment(tx, 'type', txTypeList[Number(normalizeTxType(tx.type))].name);
+                addComment(tx, 'signatureType', tx.signatureType === '1' ? 'single' : 'multi');
+                const senderAddress = 'Mx' + new Tx(this.txRlp).getSenderAddress().toString('hex');
+                addComment(tx, 'signatureData', `senderAddress: ${senderAddress}`, false);
+
+                return stringify(tx, null, 4);
             },
             editUrl() {
                 return '/encode#' + JSON.stringify(this.tx)
@@ -63,8 +76,22 @@
                 }
             },
         },
-
     };
+
+    /**
+     *
+     * @param {Object} target
+     * @param {string} property
+     * @param {string} value
+     * @param {boolean} [inline=true]
+     */
+    function addComment(target, property, value, inline = true) {
+        target[Symbol.for(`after:${property}`)] = [{
+            type: 'LineComment',
+            value: ' ' + value,
+            inline,
+        }];
+    }
 </script>
 
 <template>

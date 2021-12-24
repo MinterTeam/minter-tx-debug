@@ -22,6 +22,12 @@
     &::before {transform: rotate(45deg);}
     &::after {transform: rotate(-45deg);}
 }
+// microlight
+.microlight {
+    white-space: pre-wrap; overflow-wrap: break-word; font-family: inherit; font-variant-ligatures: no-contextual;
+    * {text-shadow: none !important;}
+    [style^="opacity:.7"], [style^="opacity:.6"] {opacity: 1 !important;}
+}
 // nuxt page transition
 .page-leave-active {transition: opacity .1s;}
 .page-enter-active {transition: opacity .25s;}

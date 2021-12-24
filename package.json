@@ -25,6 +25,7 @@
     "jquery": "^3.6.0",
     "json5": "^2.2.0",
     "lodash-es": "^4.17.21",
+    "microlight": "0.0.7",
     "minter-js-sdk": "^0.40.2",
     "minterjs-tx": "^11.0.0",
     "minterjs-util": "^0.22.0",

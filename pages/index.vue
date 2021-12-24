@@ -1,11 +1,14 @@
 <script>
     import {stringify} from 'comment-json';
+    import microlight from 'microlight';
     import {decodeTx} from 'minter-js-sdk';
     import {normalizeTxType, txTypeList} from 'minterjs-util';
     import {Tx} from 'minterjs-tx';
     import autosize from 'v-autosize';
     import checkEmpty from '~/assets/v-check-empty';
     import getTitle from '~/assets/get-title.js';
+
+    window.microlight=microlight
 
     export default {
         components: {
@@ -50,16 +53,26 @@
                 if (!tx) {
                     return '';
                 }
+                console.log(tx)
                 addComment(tx, 'chainId', tx.chainId === '1' ? 'mainnet' : 'testnet');
-                addComment(tx, 'type', txTypeList[Number(normalizeTxType(tx.type))].name);
+                if (tx.type) {
+                    addComment(tx, 'type', txTypeList[Number(normalizeTxType(tx.type))].name);
+                }
                 addComment(tx, 'signatureType', tx.signatureType === '1' ? 'single' : 'multi');
-                const senderAddress = 'Mx' + new Tx(this.txRlp).getSenderAddress().toString('hex');
-                addComment(tx, 'signatureData', `senderAddress: ${senderAddress}`, false);
+                if (tx.signatureData) {
+                    const senderAddress = 'Mx' + new Tx(this.txRlp).getSenderAddress().toString('hex');
+                    addComment(tx, 'signatureData', `senderAddress: ${senderAddress}`, false);
+                }
 
                 return stringify(tx, null, 4);
             },
             editUrl() {
                 return '/encode#' + JSON.stringify(this.tx)
+            },
+        },
+        watch: {
+            json() {
+                setTimeout(microlight.reset, 200);
             },
         },
         methods: {
@@ -139,12 +152,10 @@
                                     </div>
                     -->
                     <div class="u-cell">
-                        <label class="form-field">
-                            <textarea class="form-field__input is-not-empty" rows="1" readonly v-autosize
-                                      :value="json"
-                            ></textarea>
+                        <div class="form-field">
+                            <pre class="form-field__input is-not-empty microlight">{{ json }}</pre>
                             <span class="form-field__label">JSON</span>
-                        </label>
+                        </div>
                         <!--<span class="form-field__help">Note: coin values converted from pip</span>-->
                     </div>
                     <div class="u-cell">

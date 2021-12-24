@@ -1,6 +1,5 @@
 <script>
     import {stringify} from 'comment-json';
-    import microlight from 'microlight';
     import {decodeTx} from 'minter-js-sdk';
     import {normalizeTxType, txTypeList} from 'minterjs-util';
     import {Tx} from 'minterjs-tx';
@@ -8,7 +7,7 @@
     import checkEmpty from '~/assets/v-check-empty';
     import getTitle from '~/assets/get-title.js';
 
-    window.microlight=microlight
+    let microlight;
 
     export default {
         components: {
@@ -60,7 +59,7 @@
                 }
                 addComment(tx, 'signatureType', tx.signatureType === '1' ? 'single' : 'multi');
                 if (tx.signatureData) {
-                    const senderAddress = 'Mx' + new Tx(this.txRlp).getSenderAddress().toString('hex');
+                    const senderAddress = new Tx(this.txRlp).getSenderAddressString();
                     addComment(tx, 'signatureData', `senderAddress: ${senderAddress}`, false);
                 }
 
@@ -72,8 +71,16 @@
         },
         watch: {
             json() {
-                setTimeout(microlight.reset, 200);
+                if (!microlight) {
+                    return;
+                }
+                setTimeout(microlight.reset, 100);
             },
+        },
+        mounted() {
+            (async () => {
+                microlight = await import('microlight');
+            })();
         },
         methods: {
             decode() {

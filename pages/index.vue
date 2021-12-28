@@ -9,7 +9,9 @@
     import checkEmpty from '~/assets/v-check-empty';
     import getTitle from '~/assets/get-title.js';
 
-    let microlight;
+    (async () => {
+        var microlight = typeof window !== 'undefined' ? await import('microlight') : null;
+    })();
 
     export default {
         components: {
@@ -81,7 +83,12 @@
                     });
                 }
 
-                return stringify(tx, null, 4);
+                const jsonString = stringify(tx, null, 4)
+                if (!microlight) {
+                    return jsonString;
+                } else {
+                    return microlight.process(jsonString, 'rgb(34, 34, 34)');
+                }
             },
             editUrl() {
                 return '/encode#' + JSON.stringify(this.tx)
@@ -92,18 +99,9 @@
                 this.txWithSymbols = null;
                 this.debouncedReplaceCoinId();
             },
-            json() {
-                if (!microlight) {
-                    return;
-                }
-                setTimeout(microlight.reset, 100);
-            },
         },
         mounted() {
             this.debouncedReplaceCoinId = debounce(this.replaceCoinId, 1000);
-            (async () => {
-                microlight = await import('microlight');
-            })();
         },
         methods: {
             decode() {
@@ -204,7 +202,7 @@
                     -->
                     <div class="u-cell">
                         <div class="form-field">
-                            <pre class="form-field__input is-not-empty microlight">{{ json }}</pre>
+                            <pre class="form-field__input is-not-empty microlight-process" v-html="json"></pre>
                             <span class="form-field__label">JSON</span>
                         </div>
                         <!--<span class="form-field__help">Note: coin values converted from pip</span>-->

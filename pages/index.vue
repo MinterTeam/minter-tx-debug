@@ -1,9 +1,11 @@
 <script>
     import {stringify} from 'comment-json';
+    import {debounce, get as _get, cloneDeep} from 'lodash-es';
     import {decodeTx} from 'minter-js-sdk';
     import {normalizeTxType, txTypeList} from 'minterjs-util';
     import {Tx} from 'minterjs-tx';
     import autosize from 'v-autosize';
+    import {replaceCoinId} from '~/api/gate.js';
     import checkEmpty from '~/assets/v-check-empty';
     import getTitle from '~/assets/get-title.js';
 
@@ -44,15 +46,16 @@
                 txRlp: '',
                 error: '',
                 tx: null,
+                txWithSymbols: null,
+                debouncedReplaceCoinId: null,
             };
         },
         computed: {
             json() {
-                const tx = {...this.tx};
+                const tx = cloneDeep(this.tx);
                 if (!tx) {
                     return '';
                 }
-                console.log(tx)
                 addComment(tx, 'chainId', tx.chainId === '1' ? 'mainnet' : 'testnet');
                 if (tx.type) {
                     addComment(tx, 'type', txTypeList[Number(normalizeTxType(tx.type))].name);
@@ -63,6 +66,21 @@
                     addComment(tx, 'signatureData', `senderAddress: ${senderAddress}`, false);
                 }
 
+                // comment symbols
+                if (this.txWithSymbols) {
+                    walkDeep(this.txWithSymbols, (newValue, path, key, rootKey) => {
+                        const originalValue = _get(tx, path);
+                        if (originalValue && originalValue !== newValue) {
+                            if (!rootKey) {
+                                addComment(tx, key, newValue);
+                            } else {
+                                // add comment to nested object
+                                addComment(_get(tx, rootKey), key, newValue);
+                            }
+                        }
+                    });
+                }
+
                 return stringify(tx, null, 4);
             },
             editUrl() {
@@ -70,6 +88,10 @@
             },
         },
         watch: {
+            tx() {
+                this.txWithSymbols = null;
+                this.debouncedReplaceCoinId();
+            },
             json() {
                 if (!microlight) {
                     return;
@@ -78,6 +100,7 @@
             },
         },
         mounted() {
+            this.debouncedReplaceCoinId = debounce(this.replaceCoinId, 1000);
             (async () => {
                 microlight = await import('microlight');
             })();
@@ -89,11 +112,15 @@
                 window.history.replaceState(window.history.state, null, window.location.pathname + '#' + this.txRlp);
 
                 try {
-                    this.tx = decodeTx(this.txRlp, {decodeCheck: true})
+                    this.tx = Object.freeze(decodeTx(this.txRlp, {decodeCheck: true}));
                 } catch (e) {
                     this.error = e.message;
                     console.log(e)
                 }
+            },
+            replaceCoinId() {
+                replaceCoinId(cloneDeep(this.tx))
+                    .then((txParams) => this.txWithSymbols = Object.freeze(txParams));
             },
         },
     };
@@ -111,6 +138,23 @@
             value: ' ' + value,
             inline,
         }];
+    }
+
+    /**
+     *
+     * @param {Object} obj
+     * @param {function(value: any, path: string, key: string, rootKey: string)} callback
+     * @param {string} [rootKey]
+     */
+    function walkDeep(obj, callback, rootKey = '') {
+        for (const [key, value] of Object.entries(obj)) {
+            const path = rootKey ? rootKey + '.' + key : key;
+            if (typeof value === 'object') {
+                walkDeep(value, callback, path);
+            } else {
+                callback(value, path, key, rootKey);
+            }
+        }
     }
 </script>
 

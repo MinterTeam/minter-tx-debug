@@ -26,7 +26,7 @@
     "json5": "^2.2.0",
     "lodash-es": "^4.17.21",
     "microlight": "0.0.7",
-    "minter-js-sdk": "^0.40.2",
+    "minter-js-sdk": "^0.41.0",
     "minterjs-tx": "^11.1.0",
     "minterjs-util": "^0.22.0",
     "minterjs-wallet": "^6.1.1",

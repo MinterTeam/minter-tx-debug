@@ -9,8 +9,9 @@
     import checkEmpty from '~/assets/v-check-empty';
     import getTitle from '~/assets/get-title.js';
 
+    let microlight;
     (async () => {
-        var microlight = typeof window !== 'undefined' ? await import('microlight') : null;
+        microlight = typeof window !== 'undefined' ? await import('microlight') : null;
     })();
 
     export default {

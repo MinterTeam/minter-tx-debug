@@ -6,6 +6,44 @@
  */
 
 
+/*!
+ * repeat-string <https://github.com/jonschlinkert/repeat-string>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
+
+
+/**
+ * @fileoverview microlight - syntax highlightning library
+ * @version 0.0.1
+ *
+ * @license MIT, see http://github.com/asvd/microlight
+ * @copyright 2016 asvd <heliosframework@gmail.com>
+ *
+ * Code structure aims at minimizing the compressed library size
+ */
+
+
+/*!
+  * vue-router v3.5.2
+  * (c) 2021 Evan You
+  * @license MIT
+  */
+
+/*!
+ * Vue.js v2.6.14
+ * (c) 2014-2021 Evan You
+ * Released under the MIT License.
+ */
+
+/*!
+ * vuex v3.6.2
+ * (c) 2021 Evan You
+ * @license MIT
+ */
+
+
 /*
 object-assign
 (c) Sindre Sorhus
@@ -39,25 +77,6 @@ object-assign
  * @property {number} [gasRetryLimit=2] - max number of autofix retries after gas error
  * @property {number} [nonceRetryLimit=0] - max number of autofix retries after nonce error
  * @preserve {number} [mempoolRetryLimit=0] - max number of retries after "already exists in mempool" error
- */
-
-
-/*!
- * repeat-string <https://github.com/jonschlinkert/repeat-string>
- *
- * Copyright (c) 2014-2015, Jon Schlinkert.
- * Licensed under the MIT License.
- */
-
-
-/**
- * @fileoverview microlight - syntax highlightning library
- * @version 0.0.1
- *
- * @license MIT, see http://github.com/asvd/microlight
- * @copyright 2016 asvd <heliosframework@gmail.com>
- *
- * Code structure aims at minimizing the compressed library size
  */
 
 
@@ -142,23 +161,4 @@ object-assign
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */
-
-
-/*!
-  * vue-router v3.5.2
-  * (c) 2021 Evan You
-  * @license MIT
-  */
-
-/*!
- * Vue.js v2.6.14
- * (c) 2014-2021 Evan You
- * Released under the MIT License.
- */
-
-/*!
- * vuex v3.6.2
- * (c) 2021 Evan You
- * @license MIT
  */

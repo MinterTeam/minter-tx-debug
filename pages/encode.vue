@@ -92,6 +92,7 @@
                 signature: null,
                 resultTx: null,
                 resultJson: null,
+                resultMinterLink: null,
             };
         },
         validations() {
@@ -242,23 +243,23 @@
             },
             async generateTx() {
                 const txParamsPromise = this.getTxParamsCoinId();
+                const signerAddressOptions = this.isModeMultisig ? {address: this.form.multisigAddress} : {privateKey: this.privateKey};
+                const noncePromise = ensureNonce({nonce: this.txParams.nonce}, signerAddressOptions);
+                const [txParams, nonce] = await Promise.all([txParamsPromise, noncePromise]);
 
                 let tx;
                 if (!this.isModeMultisig) {
                     // SINGLE SIGNATURE
-                    const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {privateKey: this.privateKey});
-                    const [txParams, nonce] = await Promise.all([txParamsPromise, noncePromise]);
                     // private key to sign
                     tx = prepareTx({...txParams, nonce}, {privateKey: this.privateKey});
                 } else {
                     // MULTI SIGNATURE
-                    const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {address: this.form.multisigAddress});
-                    const [txParams, nonce] = await Promise.all([txParamsPromise, noncePromise]);
                     // address to make proof for RedeemCheck
                     tx = prepareTx(this.getTxParamsMultisigData(txParams, nonce), {address: this.form.multisigAddress});
                 }
                 this.resultTx = tx.serializeToString();
                 this.resultJson = JSON.stringify(decodeTx(this.resultTx), null, 4);
+                this.resultMinterLink = prepareLink(txParams)
                 // this.clearForm();
             },
             signTx() {
@@ -393,6 +394,7 @@
                             :$value="$v.form.tx.gasCoin"
                             :label="'Gas coin'"
                     />
+                    <span class="form-field__error" v-if="$v.form.tx.gasCoin.$dirty && !$v.form.tx.gasCoin.required">Enter gas coin</span>
                     <!--<span class="form-field__error" v-if="$v.form.tx.gasCoin.$dirty && !$v.form.tx.gasCoin.minLength">Min 3 letters</span>
                     <span class="form-field__error" v-else-if="$v.form.tx.gasCoin.$dirty && !$v.form.tx.gasCoin.maxLength">Max 10 letters</span>-->
                 </div>
@@ -539,6 +541,15 @@
                         <span class="form-field__label">Result JSON</span>
                     </label>
                     <!--<span class="form-field__help">Note: coin values converted from pip</span>-->
+                </div>
+                <div class="u-cell">
+                    <label class="form-field form-field--with-icon">
+                        <textarea class="form-field__input is-not-empty" rows="1" readonly v-autosize
+                                  :value="resultMinterLink"
+                        ></textarea>
+                        <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="resultMinterLink"/>
+                        <span class="form-field__label">Minter Link</span>
+                    </label>
                 </div>
             </div>
 

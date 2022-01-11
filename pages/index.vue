@@ -1,6 +1,7 @@
 <script>
     import {stringify} from 'comment-json';
     import {debounce, get as _get, cloneDeep} from 'lodash-es';
+    import Big from 'big.js';
     import {decodeTx} from 'minter-js-sdk';
     import {normalizeTxType, txTypeList} from 'minterjs-util';
     import {Tx} from 'minterjs-tx';
@@ -13,6 +14,8 @@
     (async () => {
         microlight = typeof window !== 'undefined' ? await import('microlight') : null;
     })();
+
+    let inertTxRlp = '';
 
     export default {
         components: {
@@ -65,8 +68,21 @@
                 }
                 addComment(tx, 'signatureType', tx.signatureType === '1' ? 'single' : 'multi');
                 if (tx.signatureData) {
-                    const senderAddress = new Tx(this.txRlp).getSenderAddressString();
+                    // use non-reactive txRlp
+                    const senderAddress = new Tx(inertTxRlp).getSenderAddressString();
                     addComment(tx, 'signatureData', `senderAddress: ${senderAddress}`, false);
+                }
+                if (tx.data.list && tx.data.list.length > 1) {
+                    addComment(tx.data, 'list', `list length: ${tx.data.list.length}`, false, true);
+
+                    const isMultisendMultipleCoin = tx.data.list.some((delivery) => {
+                        return delivery.coin !== tx.data.list[0].coin;
+                    });
+                    if (!isMultisendMultipleCoin) {
+                        const totalValue = tx.data.list.reduce((accumulator, delivery) => accumulator.plus(new Big(delivery.value)), new Big(0)).toFixed();
+                        const coinSymbol = this.txWithSymbols?.data.list[0].coin;
+                        addComment(tx.data, 'list', `total value: ${totalValue} ${coinSymbol}`, false, true);
+                    }
                 }
 
                 // comment symbols
@@ -109,6 +125,8 @@
                 this.tx = null;
                 this.error = '';
                 window.history.replaceState(window.history.state, null, window.location.pathname + '#' + this.txRlp);
+                // store non-reactive txRlp
+                inertTxRlp = this.txRlp;
 
                 try {
                     this.tx = Object.freeze(decodeTx(this.txRlp, {decodeCheck: true}));
@@ -130,13 +148,19 @@
      * @param {string} property
      * @param {string} value
      * @param {boolean} [inline=true]
+     * @param {boolean} [isBefore=false]
      */
-    function addComment(target, property, value, inline = true) {
-        target[Symbol.for(`after:${property}`)] = [{
+    function addComment(target, property, value, inline = true, isBefore = false) {
+        const position = isBefore ? 'before' : 'after';
+        const positionSymbol = Symbol.for(`${position}:${property}`);
+        if (!target[positionSymbol]) {
+            target[positionSymbol] = [];
+        }
+        target[positionSymbol].push({
             type: 'LineComment',
             value: ' ' + value,
             inline,
-        }];
+        });
     }
 
     /**

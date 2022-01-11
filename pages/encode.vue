@@ -8,9 +8,10 @@
     import maxLength from 'vuelidate/lib/validators/maxLength';
     import autosize from 'v-autosize';
     import {isValidAddress} from "minterjs-util/src/prefix";
-    import {TX_TYPE, txTypeList} from 'minterjs-tx/src/tx-types';
+    import {TX_TYPE, txTypeList} from 'minterjs-util/src/tx-types.js';
     import {walletFromMnemonic, isValidMnemonic} from 'minterjs-wallet';
     import {prepareTx, makeSignature, decodeTx} from 'minter-js-sdk/src/tx';
+    import TxData from 'minterjs-tx/src/tx-data/index.js';
     import {prepareLink} from 'minter-js-sdk/src/link';
     import {ensureNonce, replaceCoinSymbol} from '~/api/gate.js';
     import checkEmpty from '~/assets/v-check-empty.js';
@@ -187,6 +188,29 @@
                         urlHash: 'tx-params',
                     };
                 }
+            },
+        },
+        watch: {
+            'form.tx.type': {
+                handler(newVal) {
+                    if (!newVal) {
+                        return;
+                    }
+                    const fields = new TxData(undefined, newVal)._fields;
+                    const txData = Object.fromEntries(fields.map((key) => [key, '']));
+
+                    // copy same key's values from old data
+                    if (typeof this.dataJson.value === 'object' && !this.dataJson.error) {
+                        Object.entries(this.dataJson.value).forEach(([key, value]) => {
+                            const isSameKey = fields.includes(key);
+                            if (isSameKey && this.dataJson.value[key]) {
+                                txData[key] = this.dataJson.value[key];
+                            }
+                        })
+                    }
+
+                    this.form.tx.data = JSON.stringify(txData, null, 4);
+                },
             },
         },
         methods: {

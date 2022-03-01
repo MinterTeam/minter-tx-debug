@@ -223,14 +223,14 @@ hr {border: none; border-top: 1px solid @c-border;}
 @field-label-translate: (-1 * (@field-label-top + @field-label-top-line-height-compensation));
 .form-row {&+& {margin-top: 20px;}}
 .form-field {
-    display: block; position: relative; cursor: pointer; font-size: 16px; font-weight: 600; pointer-events: none;
+    display: block; position: relative; font-size: 16px; font-weight: 600; pointer-events: none;
     &.is-disabled {opacity: 0.6;}
 }
 .form-field__input {
     font-size: inherit; line-height: 20px; padding: 26px 16px 10px; color: @c-black; background: #fff; border: none; box-shadow: inset 0 0 0 1px @c-border; transition: 0.15s; display: block; width: 100%; pointer-events: auto; border-radius: 8px; opacity: 1; /* safari disabled fix */ -webkit-text-fill-color: currentcolor; /* safari disabled fix */
     &:hover {background-color: #f8f8f8;}
     &:focus {box-shadow: inset 0 0 0 2px @c-main;}
-    .is-error > & {box-shadow: inset 0 0 0 2px @c-red;}
+    .form-field.is-error & {box-shadow: inset 0 0 0 2px @c-red;}
     &:read-only:not(select) {background-color: #fff; box-shadow: inset 0 0 0 1px @c-border;} //unset to initial
     .form-field--with-icon & {padding-right: 24px + 16px;}
 }

@@ -1,8 +1,21 @@
 <script>
+    import {stringify} from 'comment-json';
+    import {debounce, get as _get, cloneDeep} from 'lodash-es';
+    import Big from 'big.js';
     import {decodeTx} from 'minter-js-sdk';
+    import {normalizeTxType, txTypeList} from 'minterjs-util';
+    import {Tx} from 'minterjs-tx';
     import autosize from 'v-autosize';
+    import {replaceCoinId} from '~/api/gate.js';
     import checkEmpty from '~/assets/v-check-empty';
     import getTitle from '~/assets/get-title.js';
+
+    let microlight;
+    (async () => {
+        microlight = typeof window !== 'undefined' ? await import('microlight') : null;
+    })();
+
+    let inertTxRlp = '';
 
     export default {
         components: {
@@ -39,32 +52,133 @@
                 txRlp: '',
                 error: '',
                 tx: null,
+                txWithSymbols: null,
+                debouncedReplaceCoinId: null,
             };
         },
         computed: {
             json() {
-                return JSON.stringify(this.tx, null, 4);
+                const tx = cloneDeep(this.tx);
+                if (!tx) {
+                    return '';
+                }
+                addComment(tx, 'chainId', tx.chainId === '1' ? 'mainnet' : 'testnet');
+                if (tx.type) {
+                    addComment(tx, 'type', txTypeList[Number(normalizeTxType(tx.type))].name);
+                }
+                addComment(tx, 'signatureType', tx.signatureType === '1' ? 'single' : 'multi');
+                if (tx.signatureData) {
+                    // use non-reactive txRlp
+                    const senderAddress = new Tx(inertTxRlp).getSenderAddressString();
+                    addComment(tx, 'signatureData', `senderAddress: ${senderAddress}`, false);
+                }
+                if (tx.data.list && tx.data.list.length > 1) {
+                    addComment(tx.data, 'list', `list length: ${tx.data.list.length}`, false, true);
+
+                    const isMultisendMultipleCoin = tx.data.list.some((delivery) => {
+                        return delivery.coin !== tx.data.list[0].coin;
+                    });
+                    if (!isMultisendMultipleCoin) {
+                        const totalValue = tx.data.list.reduce((accumulator, delivery) => accumulator.plus(new Big(delivery.value)), new Big(0)).toFixed();
+                        const coinSymbol = this.txWithSymbols?.data.list[0].coin;
+                        addComment(tx.data, 'list', `total value: ${totalValue} ${coinSymbol}`, false, true);
+                    }
+                }
+
+                // comment symbols
+                if (this.txWithSymbols) {
+                    walkDeep(this.txWithSymbols, (newValue, path, key, rootKey) => {
+                        const originalValue = _get(tx, path);
+                        if (originalValue && originalValue !== newValue) {
+                            if (!rootKey) {
+                                addComment(tx, key, newValue);
+                            } else {
+                                // add comment to nested object
+                                addComment(_get(tx, rootKey), key, newValue);
+                            }
+                        }
+                    });
+                }
+
+                const jsonString = stringify(tx, null, 4);
+                if (!microlight) {
+                    return jsonString;
+                } else {
+                    return microlight.process(jsonString, 'rgb(34, 34, 34)');
+                }
             },
             editUrl() {
-                return '/encode#' + JSON.stringify(this.tx)
+                return '/encode#' + JSON.stringify(this.tx);
             },
+        },
+        watch: {
+            tx() {
+                this.txWithSymbols = null;
+                this.debouncedReplaceCoinId();
+            },
+        },
+        mounted() {
+            this.debouncedReplaceCoinId = debounce(this.replaceCoinId, 1000);
         },
         methods: {
             decode() {
                 this.tx = null;
                 this.error = '';
                 window.history.replaceState(window.history.state, null, window.location.pathname + '#' + this.txRlp);
+                // store non-reactive txRlp
+                inertTxRlp = this.txRlp;
 
                 try {
-                    this.tx = decodeTx(this.txRlp, {decodeCheck: true})
+                    this.tx = Object.freeze(decodeTx(this.txRlp, {decodeCheck: true}));
                 } catch (e) {
                     this.error = e.message;
-                    console.log(e)
+                    console.log(e);
                 }
             },
+            replaceCoinId() {
+                replaceCoinId(cloneDeep(this.tx))
+                    .then((txParams) => this.txWithSymbols = Object.freeze(txParams));
+            },
         },
-
     };
+
+    /**
+     *
+     * @param {Object} target
+     * @param {string} property
+     * @param {string} value
+     * @param {boolean} [inline=true]
+     * @param {boolean} [isBefore=false]
+     */
+    function addComment(target, property, value, inline = true, isBefore = false) {
+        const position = isBefore ? 'before' : 'after';
+        const positionSymbol = Symbol.for(`${position}:${property}`);
+        if (!target[positionSymbol]) {
+            target[positionSymbol] = [];
+        }
+        target[positionSymbol].push({
+            type: 'LineComment',
+            value: ' ' + value,
+            inline,
+        });
+    }
+
+    /**
+     *
+     * @param {Object} obj
+     * @param {function(value: any, path: string, key: string, rootKey: string)} callback
+     * @param {string} [rootKey]
+     */
+    function walkDeep(obj, callback, rootKey = '') {
+        for (const [key, value] of Object.entries(obj)) {
+            const path = rootKey ? rootKey + '.' + key : key;
+            if (typeof value === 'object') {
+                walkDeep(value, callback, path);
+            } else {
+                callback(value, path, key, rootKey);
+            }
+        }
+    }
 </script>
 
 <template>
@@ -112,12 +226,10 @@
                                     </div>
                     -->
                     <div class="u-cell">
-                        <label class="form-field">
-                            <textarea class="form-field__input is-not-empty" rows="1" readonly v-autosize
-                                      :value="json"
-                            ></textarea>
+                        <div class="form-field">
+                            <pre class="form-field__input is-not-empty microlight-process" v-html="json"></pre>
                             <span class="form-field__label">JSON</span>
-                        </label>
+                        </div>
                         <!--<span class="form-field__help">Note: coin values converted from pip</span>-->
                     </div>
                     <div class="u-cell">

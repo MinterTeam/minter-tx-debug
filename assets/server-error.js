@@ -19,7 +19,6 @@ export const getServerValidator = (fieldName) => withParams({type: 'server'}, fu
  * @return {boolean} hasErrors - были найдены ошибки
  */
 export function fillServerErrors(error, sve) {
-    console.log(error.response)
     let resErrors = error.response && error.response.data && error.response.data.errors;
     let hasErrors = false;
     Object.keys(sve).forEach((key) => {

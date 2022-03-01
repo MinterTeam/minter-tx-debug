@@ -8,9 +8,10 @@
     import maxLength from 'vuelidate/lib/validators/maxLength';
     import autosize from 'v-autosize';
     import {isValidAddress} from "minterjs-util/src/prefix";
-    import {TX_TYPE, txTypeList} from 'minterjs-tx/src/tx-types';
+    import {TX_TYPE, txTypeList} from 'minterjs-util/src/tx-types.js';
     import {walletFromMnemonic, isValidMnemonic} from 'minterjs-wallet';
     import {prepareTx, makeSignature, decodeTx} from 'minter-js-sdk/src/tx';
+    import TxData from 'minterjs-tx/src/tx-data/index.js';
     import {prepareLink} from 'minter-js-sdk/src/link';
     import {ensureNonce, replaceCoinSymbol} from '~/api/gate.js';
     import checkEmpty from '~/assets/v-check-empty.js';
@@ -24,7 +25,7 @@
     const COIN_TYPE_SYMBOL = 'symbol';
 
     export default {
-        txTypeList,
+        txTypeListFiltered: txTypeList.filter((item) => !!item),
         CHAIN_ID_MAINNET,
         CHAIN_ID_TESTNET,
         SIGNATURE_TYPE_SINGLE,
@@ -32,7 +33,7 @@
         COIN_TYPE_ID,
         COIN_TYPE_SYMBOL,
         components: {
-            QrcodeVue,
+            // QrcodeVue,
             FieldCoin,
             ButtonCopyIcon,
             Loader,
@@ -52,7 +53,7 @@
             try {
                 hashTxParams = JSON5.parse(hashTxParams);
             } catch (e) {
-                console.log(e)
+                console.log(e);
                 return;
             }
             // restore `form.tx` from hash
@@ -91,6 +92,7 @@
                 signature: null,
                 resultTx: null,
                 resultJson: null,
+                resultMinterLink: null,
             };
         },
         validations() {
@@ -170,7 +172,7 @@
                 return {
                     ...this.form.tx,
                     data: this.dataJson.value,
-                }
+                };
             },
             json() {
                 return JSON.stringify(this.txParams, null, 4);
@@ -187,6 +189,29 @@
                         urlHash: 'tx-params',
                     };
                 }
+            },
+        },
+        watch: {
+            'form.tx.type': {
+                handler(newVal) {
+                    if (!newVal) {
+                        return;
+                    }
+                    const fields = new TxData(undefined, newVal)._fields;
+                    const txData = Object.fromEntries(fields.map((key) => [key, '']));
+
+                    // copy same key's values from old data
+                    if (typeof this.dataJson.value === 'object' && !this.dataJson.error) {
+                        Object.entries(this.dataJson.value).forEach(([key, value]) => {
+                            const isSameKey = fields.includes(key);
+                            if (isSameKey && this.dataJson.value[key]) {
+                                txData[key] = this.dataJson.value[key];
+                            }
+                        });
+                    }
+
+                    this.form.tx.data = JSON.stringify(txData, null, 4);
+                },
             },
         },
         methods: {
@@ -218,23 +243,23 @@
             },
             async generateTx() {
                 const txParamsPromise = this.getTxParamsCoinId();
+                const signerAddressOptions = this.isModeMultisig ? {address: this.form.multisigAddress} : {privateKey: this.privateKey};
+                const noncePromise = ensureNonce({nonce: this.txParams.nonce}, signerAddressOptions);
+                const [txParams, nonce] = await Promise.all([txParamsPromise, noncePromise]);
 
                 let tx;
                 if (!this.isModeMultisig) {
                     // SINGLE SIGNATURE
-                    const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {privateKey: this.privateKey});
-                    const [txParams, nonce] = await Promise.all([txParamsPromise, noncePromise]);
                     // private key to sign
                     tx = prepareTx({...txParams, nonce}, {privateKey: this.privateKey});
                 } else {
                     // MULTI SIGNATURE
-                    const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {address: this.form.multisigAddress});
-                    const [txParams, nonce] = await Promise.all([txParamsPromise, noncePromise]);
                     // address to make proof for RedeemCheck
                     tx = prepareTx(this.getTxParamsMultisigData(txParams, nonce), {address: this.form.multisigAddress});
                 }
                 this.resultTx = tx.serializeToString();
                 this.resultJson = JSON.stringify(decodeTx(this.resultTx), null, 4);
+                this.resultMinterLink = prepareLink(txParams);
                 // this.clearForm();
             },
             signTx() {
@@ -250,7 +275,7 @@
                 this.signature = null;
 
                 const txParamsPromise = this.getTxParamsCoinId();
-                const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {address: this.form.multisigAddress})
+                const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {address: this.form.multisigAddress});
 
                 Promise.all([txParamsPromise, noncePromise])
                     .then(([txParams, nonce]) => {
@@ -369,6 +394,7 @@
                             :$value="$v.form.tx.gasCoin"
                             :label="'Gas coin'"
                     />
+                    <span class="form-field__error" v-if="$v.form.tx.gasCoin.$dirty && !$v.form.tx.gasCoin.required">Enter gas coin</span>
                     <!--<span class="form-field__error" v-if="$v.form.tx.gasCoin.$dirty && !$v.form.tx.gasCoin.minLength">Min 3 letters</span>
                     <span class="form-field__error" v-else-if="$v.form.tx.gasCoin.$dirty && !$v.form.tx.gasCoin.maxLength">Max 10 letters</span>-->
                 </div>
@@ -379,7 +405,7 @@
                                @blur="$v.form.tx.type.$touch()"
                         >
                             <option value=""></option>
-                            <option v-for="typeItem in $options.txTypeList" :value="typeItem.hex" v-if="typeItem">{{ typeItem.hex }} {{ typeItem.name }}</option>
+                            <option v-for="typeItem in $options.txTypeListFiltered" :key="typeItem.hex" :value="typeItem.hex">{{ typeItem.hex }} {{ typeItem.name }}</option>
                         </select>
                         <span class="form-field__label">Type</span>
                     </label>
@@ -515,6 +541,15 @@
                         <span class="form-field__label">Result JSON</span>
                     </label>
                     <!--<span class="form-field__help">Note: coin values converted from pip</span>-->
+                </div>
+                <div class="u-cell">
+                    <label class="form-field form-field--with-icon">
+                        <textarea class="form-field__input is-not-empty" rows="1" readonly v-autosize
+                                  :value="resultMinterLink"
+                        ></textarea>
+                        <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="resultMinterLink"/>
+                        <span class="form-field__label">Minter Link</span>
+                    </label>
                 </div>
             </div>
 

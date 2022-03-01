@@ -4,6 +4,6 @@ export default {
         el.addEventListener('focus', el.select);
     },
     unbind(el, binding, vnode) {
-        el.removeEventListener('focus', el.select)
+        el.removeEventListener('focus', el.select);
     },
 };

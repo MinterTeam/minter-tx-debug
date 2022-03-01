@@ -1,5 +1,5 @@
 <script>
-import footerLinksData from '@minterteam/footer-links';
+import footerLinksData from 'minter-footer-links';
 
 export default {
     // first key not handled by webstorm intelliSense
@@ -21,7 +21,7 @@ export default {
             return link.url;
         },
     },
-}
+};
 </script>
 
 <template>

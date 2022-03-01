@@ -37,7 +37,7 @@ export default function HeaderMenu() {
             _hide();
         }
         _recalculate();
-    } , 50);
+    }, 50);
     $win.on('resize', _handleResize);
 
 

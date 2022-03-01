@@ -25,7 +25,7 @@
     const COIN_TYPE_SYMBOL = 'symbol';
 
     export default {
-        txTypeList,
+        txTypeListFiltered: txTypeList.filter((item) => !!item),
         CHAIN_ID_MAINNET,
         CHAIN_ID_TESTNET,
         SIGNATURE_TYPE_SINGLE,
@@ -33,7 +33,7 @@
         COIN_TYPE_ID,
         COIN_TYPE_SYMBOL,
         components: {
-            QrcodeVue,
+            // QrcodeVue,
             FieldCoin,
             ButtonCopyIcon,
             Loader,
@@ -53,7 +53,7 @@
             try {
                 hashTxParams = JSON5.parse(hashTxParams);
             } catch (e) {
-                console.log(e)
+                console.log(e);
                 return;
             }
             // restore `form.tx` from hash
@@ -172,7 +172,7 @@
                 return {
                     ...this.form.tx,
                     data: this.dataJson.value,
-                }
+                };
             },
             json() {
                 return JSON.stringify(this.txParams, null, 4);
@@ -207,7 +207,7 @@
                             if (isSameKey && this.dataJson.value[key]) {
                                 txData[key] = this.dataJson.value[key];
                             }
-                        })
+                        });
                     }
 
                     this.form.tx.data = JSON.stringify(txData, null, 4);
@@ -259,7 +259,7 @@
                 }
                 this.resultTx = tx.serializeToString();
                 this.resultJson = JSON.stringify(decodeTx(this.resultTx), null, 4);
-                this.resultMinterLink = prepareLink(txParams)
+                this.resultMinterLink = prepareLink(txParams);
                 // this.clearForm();
             },
             signTx() {
@@ -275,7 +275,7 @@
                 this.signature = null;
 
                 const txParamsPromise = this.getTxParamsCoinId();
-                const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {address: this.form.multisigAddress})
+                const noncePromise = ensureNonce({nonce: this.txParams.nonce}, {address: this.form.multisigAddress});
 
                 Promise.all([txParamsPromise, noncePromise])
                     .then(([txParams, nonce]) => {
@@ -405,7 +405,7 @@
                                @blur="$v.form.tx.type.$touch()"
                         >
                             <option value=""></option>
-                            <option v-for="typeItem in $options.txTypeList" :value="typeItem.hex" v-if="typeItem">{{ typeItem.hex }} {{ typeItem.name }}</option>
+                            <option v-for="typeItem in $options.txTypeListFiltered" :key="typeItem.hex" :value="typeItem.hex">{{ typeItem.hex }} {{ typeItem.name }}</option>
                         </select>
                         <span class="form-field__label">Type</span>
                     </label>

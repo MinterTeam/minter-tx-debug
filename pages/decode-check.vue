@@ -56,10 +56,10 @@
                 window.history.replaceState(window.history.state, null, window.location.pathname + '#' + this.checkRlp);
 
                 try {
-                    this.check = decodeCheck(this.checkRlp)
+                    this.check = decodeCheck(this.checkRlp);
                 } catch (e) {
                     this.error = e.message;
-                    console.log(e)
+                    console.log(e);
                 }
             },
         },

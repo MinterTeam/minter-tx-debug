@@ -21,7 +21,7 @@ export default {
             return link.url;
         },
     },
-}
+};
 </script>
 
 <template>

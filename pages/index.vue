@@ -100,7 +100,7 @@
                     });
                 }
 
-                const jsonString = stringify(tx, null, 4)
+                const jsonString = stringify(tx, null, 4);
                 if (!microlight) {
                     return jsonString;
                 } else {
@@ -108,7 +108,7 @@
                 }
             },
             editUrl() {
-                return '/encode#' + JSON.stringify(this.tx)
+                return '/encode#' + JSON.stringify(this.tx);
             },
         },
         watch: {
@@ -132,7 +132,7 @@
                     this.tx = Object.freeze(decodeTx(this.txRlp, {decodeCheck: true}));
                 } catch (e) {
                     this.error = e.message;
-                    console.log(e)
+                    console.log(e);
                 }
             },
             replaceCoinId() {

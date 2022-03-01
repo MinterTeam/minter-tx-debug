@@ -15,7 +15,7 @@ export default {
             el.addEventListener(binding.value, handleInputEvent);
         }
         if (vnode.componentInstance) {
-            vnode.componentInstance.$on('input', () => checkInputElementIsEmpty(el))
+            vnode.componentInstance.$on('input', () => checkInputElementIsEmpty(el));
         }
     },
     componentUpdated(el, binding) {

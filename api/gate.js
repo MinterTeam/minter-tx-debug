@@ -21,7 +21,7 @@ export const estimateCoinSell = EstimateCoinSell(minterApi);
 export const estimateCoinBuy = EstimateCoinBuy(minterApi);
 
 export const replaceCoinSymbol = ReplaceCoinSymbol(minterApi);
-export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi);
+// export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi);
 export const replaceCoinId = ReplaceCoinId(minterApi);
 
 

@@ -116,7 +116,7 @@ gulp.task('default', gulp.series(
         setTimeout(function() {
             log('Watching...');
         });
-    }
+    },
 ));
 
 

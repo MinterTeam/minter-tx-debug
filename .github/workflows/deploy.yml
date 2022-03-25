@@ -2,10 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [ taconet ]
+    branches: [ toronet ]
 env:
-  INGRESS_DOMAIN_taconet: "tx-debug.taconet.minter.network"
-  KUBE_NAMESPACE_taconet: "taconet"
+  INGRESS_DOMAIN_toronet: "tx-debug.toronet.minter.network"
+  KUBE_NAMESPACE_toronet: "toronet"
 jobs:
   ci:
     name: build
